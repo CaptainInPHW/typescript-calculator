@@ -3,13 +3,12 @@ class Calculator {
   private readonly KEYS: Array<Array<number | string>> = [
     ['AC', '÷'],
     [7, 8, 9, '×'],
-    [4, 5, 6, '﹣'],
-    [1, 2, 3, '﹢'],
+    [4, 5, 6, '-'],
+    [1, 2, 3, '+'],
     [0, '.', '=']
   ];
-  private readonly NUMBERS: Array<number> = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-  private readonly OPERATORS: Array<string> = ['÷', '×', '﹢', '﹣'];
-  private readonly DECIMAL_POINT: string = '.';
+  private readonly NUMBERS: Array<string> = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.'];
+  private readonly OPERATORS: Array<string> = ['÷', '×', '+', '-'];
   private readonly EXECUTE_FLAG: string = '=';
   private readonly CLEAR_FLAG: string = 'AC';
   private calculator: HTMLElement;
@@ -70,21 +69,43 @@ class Calculator {
       const target = event.target as HTMLElement;
       const { className } = target;
       if (className === 'button') {
-        const text = target.textContent;
-        if (this.NUMBERS.indexOf(Number(text)) > -1) {
+        const key: string = target.textContent;
+        if (this.NUMBERS.indexOf(key) > -1) {
           if (!this.operator) {
-            this.x += text;
+            this.x += key;
             this.updateResult(this.x);
           } else {
-            this.y += text;
+            this.y += key;
             this.updateResult(this.y);
           }
-        } else if (this.OPERATORS.indexOf(text) > -1) {
-          this.operator = text;
-        } else if (this.EXECUTE_FLAG === text) {
-          this.result = this.excuteAlgorithm();
-          this.updateResult(this.result);
-        } else if (this.CLEAR_FLAG === text) {
+        } else if (this.OPERATORS.indexOf(key) > -1) {
+          if (this.x === '' && this.y === '') {
+            this.x = '0';
+            this.operator = key;
+          } else if (this.x !== '' && this.y === '') {
+            this.operator = key;
+          } else if (this.x !== '' && this.y !== '') {
+            this.result = this.excuteAlgorithm();
+            this.updateResult(this.result);
+            this.x = this.result;
+            this.y = '';
+            this.operator = key;
+          }
+        } else if (this.EXECUTE_FLAG === key) {
+          if (this.x !== '' && this.y === '') {
+            this.result = this.x;
+            this.updateResult(this.result);
+          } else if (this.x === '' && this.y === '') {
+            this.result = '0';
+            this.updateResult(this.result);
+          } else if (this.x !== '' && this.y !== '') {
+            this.result = this.excuteAlgorithm();
+            this.updateResult(this.result);
+            this.x = this.result;
+            this.y = '';
+            this.operator = '';
+          }
+        } else if (this.CLEAR_FLAG === key) {
           this.x = '';
           this.y = '';
           this.operator = '';
@@ -99,7 +120,7 @@ class Calculator {
   }
   private excuteAlgorithm(): string {
     switch (this.operator) {
-      case '﹢':
+      case '+':
         return `${Number(this.x) + Number(this.y)}`;
       case '-':
         return `${Number(this.x) - Number(this.y)}`;

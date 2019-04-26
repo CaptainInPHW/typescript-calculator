@@ -4,13 +4,12 @@ var Calculator = /** @class */ (function () {
         this.KEYS = [
             ['AC', '÷'],
             [7, 8, 9, '×'],
-            [4, 5, 6, '﹣'],
-            [1, 2, 3, '﹢'],
+            [4, 5, 6, '-'],
+            [1, 2, 3, '+'],
             [0, '.', '=']
         ];
-        this.NUMBERS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-        this.OPERATORS = ['÷', '×', '﹢', '﹣'];
-        this.DECIMAL_POINT = '.';
+        this.NUMBERS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.'];
+        this.OPERATORS = ['÷', '×', '+', '-'];
         this.EXECUTE_FLAG = '=';
         this.CLEAR_FLAG = 'AC';
         this.x = '';
@@ -70,25 +69,51 @@ var Calculator = /** @class */ (function () {
             var target = event.target;
             var className = target.className;
             if (className === 'button') {
-                var text = target.textContent;
-                if (_this.NUMBERS.indexOf(Number(text)) > -1) {
+                var key = target.textContent;
+                if (_this.NUMBERS.indexOf(key) > -1) {
                     if (!_this.operator) {
-                        _this.x += text;
+                        _this.x += key;
                         _this.updateResult(_this.x);
                     }
                     else {
-                        _this.y += text;
+                        _this.y += key;
                         _this.updateResult(_this.y);
                     }
                 }
-                else if (_this.OPERATORS.indexOf(text) > -1) {
-                    _this.operator = text;
+                else if (_this.OPERATORS.indexOf(key) > -1) {
+                    if (_this.x === '' && _this.y === '') {
+                        _this.x = '0';
+                        _this.operator = key;
+                    }
+                    else if (_this.x !== '' && _this.y === '') {
+                        _this.operator = key;
+                    }
+                    else if (_this.x !== '' && _this.y !== '') {
+                        _this.result = _this.excuteAlgorithm();
+                        _this.updateResult(_this.result);
+                        _this.x = _this.result;
+                        _this.y = '';
+                        _this.operator = key;
+                    }
                 }
-                else if (_this.EXECUTE_FLAG === text) {
-                    _this.result = _this.excuteAlgorithm();
-                    _this.updateResult(_this.result);
+                else if (_this.EXECUTE_FLAG === key) {
+                    if (_this.x !== '' && _this.y === '') {
+                        _this.result = _this.x;
+                        _this.updateResult(_this.result);
+                    }
+                    else if (_this.x === '' && _this.y === '') {
+                        _this.result = '0';
+                        _this.updateResult(_this.result);
+                    }
+                    else if (_this.x !== '' && _this.y !== '') {
+                        _this.result = _this.excuteAlgorithm();
+                        _this.updateResult(_this.result);
+                        _this.x = _this.result;
+                        _this.y = '';
+                        _this.operator = '';
+                    }
                 }
-                else if (_this.CLEAR_FLAG === text) {
+                else if (_this.CLEAR_FLAG === key) {
                     _this.x = '';
                     _this.y = '';
                     _this.operator = '';
@@ -103,7 +128,7 @@ var Calculator = /** @class */ (function () {
     };
     Calculator.prototype.excuteAlgorithm = function () {
         switch (this.operator) {
-            case '﹢':
+            case '+':
                 return "" + (Number(this.x) + Number(this.y));
             case '-':
                 return "" + (Number(this.x) - Number(this.y));
