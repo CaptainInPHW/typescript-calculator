@@ -1,3 +1,5 @@
+⚠️ This project is no longer maintained. ⚠️
+
 # typescript-calculator
 
 A awesome calculator that simulates a Mac style. Source code is written by Typescript language.
